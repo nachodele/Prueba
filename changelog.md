@@ -55,3 +55,8 @@ new: actualizacion.py
 
 new : actualizacion.py
 
+
+## v3.2.0
+
+a ver que pasa
+

@@ -22,7 +22,7 @@ else:
 # Obtener los mensajes de commit desde el último tag
 commit_messages = [commit.message.lower() for commit in repo.iter_commits(latest_tag)]
 
-update = False
+found_keyword = False
 
 # Actualizar la versión del siguiente tag según los mensajes de commit
 for message in commit_messages:
@@ -32,15 +32,17 @@ for message in commit_messages:
         major += 1
         minor = 0
         patch = 0
+        found_keyword = True
         break
     elif "new" in message_lower or "upgrade" in message_lower:
         minor += 1
         patch = 0
+        found_keyword = True
         break
     else:
         update = True
 
-if update:
+if not found_keyword:
     patch += 1
 
 new_tag = f"v{major}.{minor}.{patch}"
