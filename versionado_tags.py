@@ -26,12 +26,12 @@ update = False
 
 # Actualizar la versión del siguiente tag segun los mensajes de commit
 for message in commit_messages:
-    if "Breaking" in message:
+    if "breaking" in message:
         major += 1
         minor = 0
         patch = 0
         break
-    elif "New" in message or "Upgrade" in message:
+    elif "new" in message or "upgrade" in message:
         minor += 1
         patch = 0
         break
@@ -40,7 +40,7 @@ for message in commit_messages:
 
 if update:
     patch += 1
-    
+
 new_tag = f"v{major}.{minor}.{patch}"
 
 try:
