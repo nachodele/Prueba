@@ -1,72 +1,78 @@
 import git
 import re
 
-# Ruta al repositorio local
 repo_dir = "/home/nachodele/testlab/Prueba"
-
-# Inicializar el repositorio Git
 repo = git.Repo(repo_dir)
-
-# Patrón para extraer el número de versión del último tag
 version_pattern = re.compile(r"v(\d+\.\d+\.\d+)")
 
+# Definir una función para comparar versiones según las reglas de Semantic Versioning
+def compare_versions(v1, v2):
+    v1_parts = list(map(int, v1.split('.')))
+    v2_parts = list(map(int, v2.split('.')))
+    
+    for part1, part2 in zip(v1_parts, v2_parts):
+        if part1 < part2:
+            return -1
+        if part1 > part2:
+            return 1
+    
+    return 0
 
-# Determinar el último tag existente y los commits desde ese tag
+# Determinar la nueva versión del siguiente tag según los mensajes de commit
+def calculate_next_version(current_version, commit_messages):
+    major, minor, patch = map(int, current_version.split('.'))
+    
+    breaking_change = False
+    for message in commit_messages:
+        message_lower = message.lower()
+        
+        if "breaking" in message_lower:
+            breaking_change = True
+            break
+        elif "new" in message_lower or "upgrade" in message_lower:
+            if major == 0:
+                major += 1
+                minor = 0
+                patch = 0
+            else:
+                minor += 1
+                patch = 0
+            break
+    
+    if breaking_change:
+        major += 1
+        minor = 0
+        patch = 0
+    else:
+        patch += 1
+    
+    return f"{major}.{minor}.{patch}"
+
+# Determinar el último tag existente
 latest_tag = max(repo.tags, key=lambda t: list(map(int, version_pattern.search(str(t)).group(1).split('.'))) if repo.tags else None)
 
 if latest_tag:
     latest_version = version_pattern.search(str(latest_tag)).group(1)
-    major, minor, patch = map(int, latest_version.split('.'))
 else:
-    major, minor, patch = 0, 0, 0
+    latest_version = "0.0.0"
 
 # Obtener los mensajes de commit desde el último tag
 commit_messages = [commit.message.lower() for commit in repo.iter_commits(latest_tag)]
 
+# Calcular la nueva versión del siguiente tag
+new_version = calculate_next_version(latest_version, commit_messages)
 
-# Actualizar la versión del siguiente tag segun los mensajes de commit
-
-# Verificar si el último commit contenía una palabra clave
-last_commit_keywords = ["breaking", "new", "upgrade"]
-last_commit_keyword_found = any(keyword in commit_messages[-1].lower() for keyword in last_commit_keywords)
-
-# Obtener el nombre del último tag
-latest_tag_name = latest_tag.name
-
-# Extraer y convertir los valores del tag actual
-major, minor, patch = map(int, latest_tag_name[1:].split('.'))
-
-# Actualizar la versión del siguiente tag según los mensajes de commit
-if last_commit_keyword_found:
-    for message in commit_messages:
-        message_lower = message.lower()  
-
-        if "breaking" in message_lower:
-            major += 1
-            minor = 0
-            patch = 0
-            break
-        elif "new" in message_lower or "upgrade" in message_lower:
-            minor += 1
-            patch = 0
-            break
-else:
-    patch += 1
-
-new_tag = f"v{major}.{minor}.{patch}"
+# Crear el nuevo tag con la nueva versión
+new_tag = f"v{new_version}"
 
 try:
-    # Crear el nuevo tag
+    # Crear el nuevo tag y actualizar changelog.md
     repo.create_tag(new_tag)
-
-    # Obtener el commit del nuevo tag y los cambios asociados
     tag_commit = list(repo.iter_commits(new_tag))[0]
 
-    # Actualizar el archivo changelog.md con los cambios para el nuevo tag
     with open(f"{repo_dir}/changelog.md", "a") as changelog_file:
         changelog_file.write(f"\n## {new_tag}\n\n{tag_commit.message}\n")
 
-    # Imprimir confirmación del proceso
     print(f"Se ha creado el tag {new_tag} y se ha actualizado changelog.md con los cambios asociados.")
 except git.exc.GitCommandError as e:
     print(f"Error al crear el tag: {e}")
