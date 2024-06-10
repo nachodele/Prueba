@@ -24,7 +24,7 @@ commit_messages = [commit.message.lower() for commit in repo.iter_commits(latest
 
 found_keyword = False
 
-# Actualizar la versión del siguiente tag según los mensajes de commit
+# Actualizar la versión del siguiente tag segun los mensajes de commit
 for message in commit_messages:
     message_lower = message.lower()  # Convertir el mensaje a minúsculas
 
@@ -39,8 +39,6 @@ for message in commit_messages:
         patch = 0
         found_keyword = True
         break
-    else:
-        update = True
 
 if not found_keyword:
     patch += 1
