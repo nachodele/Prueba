@@ -13,23 +13,9 @@ version_pattern = re.compile(r"v(\d+\.\d+\.\d+)")
 
 # Determinar el último tag existente y los commits desde ese tag
 latest_tag = max(repo.tags, key=lambda t: list(map(int, version_pattern.search(str(t)).group(1).split('.'))) if repo.tags else None)
-"""""
+
 if latest_tag:
     latest_version = version_pattern.search(str(latest_tag)).group(1)
-    major, minor, patch = map(int, latest_version.split('.'))
-else:
-    major, minor, patch = 0, 0, 0
-"""""
-# Determinar el ultimo commit y los commits desde ese commit
-latest_commit = next(repo.iter_commits(), None)
-
-if latest_commit:
-    version_match = version_pattern.search(latest_commit.message)
-    if version_match:
-        latest_version = version_match.group(1)
-    else:
-        latest_version = "0.0.0"
-    
     major, minor, patch = map(int, latest_version.split('.'))
 else:
     major, minor, patch = 0, 0, 0
@@ -54,9 +40,10 @@ for message in commit_messages:
         patch = 0
         found_keyword = True
         break
+    else:
+        patch += 1
+        break
 
-if not found_keyword:
-    patch += 1
 
 new_tag = f"v{major}.{minor}.{patch}"
 
