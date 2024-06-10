@@ -26,11 +26,11 @@ commit_messages = [commit.message.lower() for commit in repo.iter_commits(latest
 for message in commit_messages:
     first_word = message.split()[0]
 
-    if first_word == "breaking":
+    if first_word == "Breaking:":
         major += 1
         minor = 0
         patch = 0
-    elif first_word == "new" or first_word == "upgrade":
+    elif first_word == "New:" or first_word == "Upgrade:":
         minor += 1
         patch = 0
     else:
