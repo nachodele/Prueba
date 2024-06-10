@@ -10,3 +10,13 @@ New : README
 
 Breaking: actualizacion .py
 
+
+## v0.0.72
+
+Breaking: actualizacion .py
+
+
+## v0.0.73
+
+Breaking: actualizacion .py
+

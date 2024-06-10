@@ -26,14 +26,14 @@ update = False
 
 # Actualizar la versión del siguiente tag según los mensajes de commit
 for message in commit_messages:
-    if "Breaking:" in message:
+    if "Breaking" in message:
         major += 1
         minor = 0
         patch = 0
         break
 
 for message in commit_messages:
-    if "New:" in message or "Upgrade:" in message:
+    if "New" in message or "Upgrade" in message:
         minor += 1
         patch = 0
         break
