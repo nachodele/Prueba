@@ -45,3 +45,8 @@ breaking : actualizacion .py
 
 breaking : new .py
 
+
+## v3.0.0
+
+new: actualizacion.py
+
