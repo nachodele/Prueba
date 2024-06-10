@@ -40,3 +40,8 @@ Breaking : actualizacion .py
 
 breaking : actualizacion .py
 
+
+## v2.0.0
+
+breaking : new .py
+
