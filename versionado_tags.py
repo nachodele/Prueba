@@ -26,12 +26,14 @@ update = False
 
 # Actualizar la versión del siguiente tag segun los mensajes de commit
 for message in commit_messages:
-    if "breaking" in message:
+    message_lower = message.lower()  # Convertir el mensaje a minúsculas
+
+    if "breaking" in message_lower:
         major += 1
         minor = 0
         patch = 0
         break
-    elif "new" in message or "upgrade" in message:
+    elif "new" in message_lower or "upgrade" in message_lower:
         minor += 1
         patch = 0
         break

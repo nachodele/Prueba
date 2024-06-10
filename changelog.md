@@ -35,3 +35,8 @@ Breaking : actualizacion .py
 
 Breaking : actualizacion .py
 
+
+## v1.0.0
+
+breaking : actualizacion .py
+
