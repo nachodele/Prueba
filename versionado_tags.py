@@ -10,11 +10,21 @@ repo = git.Repo(repo_dir)
 # Patrón para extraer el número de versión del último tag
 version_pattern = re.compile(r"v(\d+\.\d+\.\d+)")
 
+"""""
 # Determinar el último tag existente y los commits desde ese tag
 latest_tag = max(repo.tags, key=lambda t: list(map(int, version_pattern.search(str(t)).group(1).split('.'))) if repo.tags else None)
 
 if latest_tag:
     latest_version = version_pattern.search(str(latest_tag)).group(1)
+    major, minor, patch = map(int, latest_version.split('.'))
+else:
+    major, minor, patch = 0, 0, 0
+"""""
+# Determinar el último commit y los commits desde ese commit
+latest_commit = next(repo.iter_commits(), None)
+
+if latest_commit:
+    latest_version = version_pattern.search(latest_commit.message).group(1)
     major, minor, patch = map(int, latest_version.split('.'))
 else:
     major, minor, patch = 0, 0, 0
