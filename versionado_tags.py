@@ -25,27 +25,32 @@ commit_messages = [commit.message.lower() for commit in repo.iter_commits(latest
 
 
 # Actualizar la versión del siguiente tag segun los mensajes de commit
-# Inicializar la bandera para rastrear si se encontró una palabra clave
-found_keyword = False
+
+# Verificar si el último commit contenía una palabra clave
+last_commit_keywords = ["breaking", "new", "upgrade"]
+last_commit_keyword_found = any(keyword in commit_messages[-1].lower() for keyword in last_commit_keywords)
+
+# Obtener el nombre del último tag
+latest_tag_name = latest_tag.name
+
+# Extraer y convertir los valores del tag actual
+major, minor, patch = map(int, latest_tag_name[1:].split('.'))
 
 # Actualizar la versión del siguiente tag según los mensajes de commit
-for message in commit_messages:
-    message_lower = message.lower()  # Convertir el mensaje a minúsculas
+if last_commit_keyword_found:
+    for message in commit_messages:
+        message_lower = message.lower()  
 
-    if "breaking" in message_lower:
-        major += 1
-        minor = 0
-        patch = 0
-        found_keyword = True
-        break
-    elif "new" in message_lower or "upgrade" in message_lower:
-        minor += 1
-        patch = 0
-        found_keyword = True
-        break
-
-# Incrementar el parche si no se encontraron palabras clave
-if not found_keyword:
+        if "breaking" in message_lower:
+            major += 1
+            minor = 0
+            patch = 0
+            break
+        elif "new" in message_lower or "upgrade" in message_lower:
+            minor += 1
+            patch = 0
+            break
+else:
     patch += 1
 
 new_tag = f"v{major}.{minor}.{patch}"
